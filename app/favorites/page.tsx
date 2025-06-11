@@ -7,6 +7,7 @@ import '../styles.css';
 import Link from 'next/link';
 import '../components/ratings';
 import RatingInput from '../components/ratings';
+import Delete from '../components/deleteButton';
 
 interface Favorite {
     movies_id: string;
@@ -61,6 +62,7 @@ export default function FavoritesPage() {
                                     <p className='genres'>{anime.genres.join(', ')}</p>
                                 </Link>
                                 <RatingInput movieId={anime.movies_id} />
+                                <Delete movies_id={anime.movies_id}/>
                             </div>
                         ))}
                     </div>
