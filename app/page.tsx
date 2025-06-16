@@ -5,7 +5,7 @@ import Head from 'next/head'
 import './styles.css'
 import Navbar from './components/navigation'
 import Link from 'next/link'
-import useRequireAuth from './action/authSession' // ✅ import hook
+import useRequireAuth from './action/authSession'
 
 interface Anime {
   id: number;
@@ -24,7 +24,7 @@ export default function HomePage() {
   const [prompt, setPrompt] = useState<string>('')
   const [response, setResponse] = useState<Anime[]>([])
 
-  const { loading } = useRequireAuth() // ✅ panggil hook
+  const { loading } = useRequireAuth()
 
   const sendPrompt = async () => {
     try {
@@ -66,7 +66,7 @@ export default function HomePage() {
     }
   }
 
-  if (loading) return <p>Loading...</p> // ✅ prevent rendering before auth check
+  if (loading) return <p>Loading...</p>
 
   return (
     <>
