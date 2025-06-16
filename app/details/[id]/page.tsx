@@ -1,7 +1,11 @@
+'use client';
+
 import '../../styles.css';
 import Navbar from "../../components/navigation";
-import '../../components/addFavoritesButton'
 import AddFavoriteButton from '../../components/addFavoritesButton';
+import useRequireAuth from '@/app/action/authSession';
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
 
 interface Anime {
     id: number;
@@ -16,49 +20,55 @@ interface Anime {
     endDate: string | null;
 }
 
-interface Props {
-    params: {
-        id: string;
-    };
-}
+export default function DetailPage() {
+    const { loading } = useRequireAuth();
+    const [anime, setAnime] = useState<Anime | null>(null);
+    const params = useParams();
+    const animeId = params?.id;
 
-async function getAnimeById(id: string): Promise<Anime | null> {
-    try {
-        const res = await fetch(`https://api.jikan.moe/v4/anime/${id}`);
-        if (!res.ok) throw new Error("Failed to fetch");
-        const data = await res.json();
-        const item = data.data;
+    useEffect(() => {
+        const getAnimeById = async () => {
+            if (!animeId) return;
 
-        return {
-            id: item.mal_id,
-            title: item.title,
-            synopsis: item.synopsis,
-            url: item.url,
-            imageUrl: item.images?.jpg?.image_url,
-            episodes: item.episodes,
-            score: item.score,
-            genres: item.genres.map((g: any) => g.name),
-            startDate: item.aired?.from,
-            endDate: item.aired?.to,
+            try {
+                const res = await fetch(`https://api.jikan.moe/v4/anime/${animeId}`);
+                if (!res.ok) throw new Error("Failed to fetch");
+                const data = await res.json();
+                const item = data.data;
+
+                const animeData: Anime = {
+                    id: item.mal_id,
+                    title: item.title,
+                    synopsis: item.synopsis,
+                    url: item.url,
+                    imageUrl: item.images?.jpg?.image_url,
+                    episodes: item.episodes,
+                    score: item.score,
+                    genres: item.genres.map((g: any) => g.name),
+                    startDate: item.aired?.from,
+                    endDate: item.aired?.to,
+                };
+
+                setAnime(animeData);
+            } catch (error) {
+                console.error(error);
+                setAnime(null);
+            }
         };
-    } catch (error) {
-        console.error(error);
-        return null;
-    }
-}
 
-export default async function DetailPage({ params }: Props) {
-    const anime = await getAnimeById(params.id);
+        if (!loading && animeId) {
+            getAnimeById();
+        }
+    }, [loading, animeId]);
 
-    if (!anime) {
-        return <div>Anime not found or error fetching data.</div>;
-    }
+    if (loading) return <div>Loading...</div>;
+    if (!anime) return <div>Anime not found or error fetching data.</div>;
 
     return (
         <>
             <Navbar />
-            <main className='container'>
-                <h1 className='title'>{anime.title}</h1>
+            <main className="container">
+                <h1 className="title">{anime.title}</h1>
                 {anime.imageUrl && (
                     <img
                         src={anime.imageUrl}

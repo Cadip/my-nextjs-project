@@ -1,10 +1,11 @@
-"use client";
+'use client'
 
-import { useState, ChangeEvent, KeyboardEvent } from "react";
-import Head from "next/head";
-import "./styles.css";
-import Navbar from "./components/navigation";
-import Link from 'next/link';
+import { useState, ChangeEvent, KeyboardEvent } from 'react'
+import Head from 'next/head'
+import './styles.css'
+import Navbar from './components/navigation'
+import Link from 'next/link'
+import useRequireAuth from './action/authSession' // ✅ import hook
 
 interface Anime {
   id: number;
@@ -20,19 +21,21 @@ interface Anime {
 }
 
 export default function HomePage() {
-  const [prompt, setPrompt] = useState<string>("");
-  const [response, setResponse] = useState<Anime[]>([]);
+  const [prompt, setPrompt] = useState<string>('')
+  const [response, setResponse] = useState<Anime[]>([])
+
+  const { loading } = useRequireAuth() // ✅ panggil hook
 
   const sendPrompt = async () => {
     try {
-      const query = prompt.trim();
+      const query = prompt.trim()
       if (!query) {
-        alert("Please enter a search keyword.");
-        return;
+        alert('Please enter a search keyword.')
+        return
       }
-      const res = await fetch(`/api/movies?search=${encodeURIComponent(query)}`);
-      if (!res.ok) throw new Error("Failed to fetch");
-      const data = await res.json();
+      const res = await fetch(`/api/movies?search=${encodeURIComponent(query)}`)
+      if (!res.ok) throw new Error('Failed to fetch')
+      const data = await res.json()
 
       const animes = data.data.map((item: any) => ({
         id: item.mal_id,
@@ -45,23 +48,25 @@ export default function HomePage() {
         genres: item.genres.map((g: any) => g.name),
         startDate: item.start_date,
         endDate: item.end_date,
-      }));
+      }))
 
-      setResponse(animes);
+      setResponse(animes)
     } catch (error) {
-      alert(`Error: ${error}`);
+      alert(`Error: ${error}`)
     }
-  };
+  }
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setPrompt(e.target.value);
-  };
+    setPrompt(e.target.value)
+  }
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      sendPrompt();
+    if (e.key === 'Enter') {
+      sendPrompt()
     }
-  };
+  }
+
+  if (loading) return <p>Loading...</p> // ✅ prevent rendering before auth check
 
   return (
     <>
@@ -89,29 +94,17 @@ export default function HomePage() {
           <div className="grid">
             {response.map((anime, index) => (
               <div key={`${anime.id}-${index}`} className="card">
-                {anime.imageUrl && (
-                  <img src={anime.imageUrl} alt={anime.title} />
-                )}
+                {anime.imageUrl && <img src={anime.imageUrl} alt={anime.title} />}
                 <h3 className="title">{anime.title}</h3>
-                <p>
-                  <strong>Episodes:</strong>{" "}
-                  {anime.episodes !== null ? anime.episodes : "Unknown"}
-                </p>
-                <p>
-                  <strong>Score:</strong>{" "}
-                  {anime.score !== null ? anime.score : "N/A"}
-                </p>
-                <p>
-                  <strong>Genres:</strong> {anime.genres.join(", ")}
-                </p>
-                <Link href={`/details/${anime.id}`}>
-                  More Info
-                </Link>
+                <p><strong>Episodes:</strong> {anime.episodes ?? 'Unknown'}</p>
+                <p><strong>Score:</strong> {anime.score ?? 'N/A'}</p>
+                <p><strong>Genres:</strong> {anime.genres.join(', ')}</p>
+                <Link href={`/details/${anime.id}`}>More Info</Link>
               </div>
             ))}
           </div>
         </div>
       </main>
     </>
-  );
+  )
 }
