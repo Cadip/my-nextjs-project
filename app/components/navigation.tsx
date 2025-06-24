@@ -45,7 +45,7 @@ const Navbar = () => {
     }, []);
 
     return (
-        <nav className="flex items-center justify-between px-6 py-4 border-b shadow-sm bg-white">
+        <nav className="flex items-center justify-between px-6 py-4 border-b shadow-sm bg-white text-black">
             <div>
                 <Link
                     href="/"
@@ -65,16 +65,16 @@ const Navbar = () => {
                 <div className="relative" ref={dropdownRef}>
                     <button
                         onClick={() => setDropdownOpen(!dropdownOpen)}
-                        className="bg-gray-100 px-4 py-2 rounded hover:bg-gray-200 transition"
+                        className="px-4 py-2 rounded bg-blue-600 transition text-black"
                     >
                         {username}
                     </button>
 
                     {dropdownOpen && (
-                        <div className="absolute right-0 mt-2 w-40 bg-white border rounded shadow-lg z-10">
+                        <div className="absolute right-0 mt-2 w-40 bg-red-500 border rounded shadow-lg z-10">
                             <button
                                 onClick={handleLogout}
-                                className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                                className="w-full text-left px-4 py-2 hover:bg-red-100 text-black"
                             >
                                 Logout
                             </button>

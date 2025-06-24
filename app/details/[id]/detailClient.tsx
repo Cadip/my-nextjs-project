@@ -6,7 +6,7 @@ import { supabase } from '../../lib/supabaseClient';
 import Navbar from '../../components/navigation';
 import AddFavoriteButton from '../../components/addFavoritesButton';
 
-interface Anime {
+export interface Anime {
     id: number;
     title: string;
     synopsis: string;
