@@ -54,6 +54,7 @@ export default function Delete({ movies_id }: DeleteProps) {
         }
         setMessage('Berhasil menghapus dari Favorites dan Ratings!');
         setIsError(false);
+        window.location.reload();
     }
 
     return (

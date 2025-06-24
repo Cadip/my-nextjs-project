@@ -1,7 +1,5 @@
 import '../../styles.css';
-import Navbar from "../../components/navigation";
-import '../../components/addFavoritesButton'
-import AddFavoriteButton from '../../components/addFavoritesButton';
+import DetailClient from './detailClient';
 
 interface Anime {
     id: number;
@@ -54,31 +52,5 @@ export default async function DetailPage({ params }: Props) {
         return <div>Anime not found or error fetching data.</div>;
     }
 
-    return (
-        <>
-            <Navbar />
-            <main className='container'>
-                <h1 className='title'>{anime.title}</h1>
-                {anime.imageUrl && (
-                    <img
-                        src={anime.imageUrl}
-                        alt={anime.title}
-                        width={250}
-                        height={350}
-                    />
-                )}
-                <p><strong>Score:</strong> {anime.score ?? "N/A"}</p>
-                <p><strong>Episodes:</strong> {anime.episodes ?? "Unknown"}</p>
-                <p><strong>Genres:</strong> {anime.genres.join(", ")}</p>
-                <p><strong>Aired:</strong> {anime.startDate?.slice(0, 10) ?? "?"} – {anime.endDate?.slice(0, 10) ?? "?"}</p>
-                <p><strong>Synopsis:</strong> {anime.synopsis}</p>
-                <AddFavoriteButton
-                    id={anime.id.toString()}
-                    title={anime.title}
-                    imageUrl={anime.imageUrl}
-                    genres={anime.genres}
-                />
-            </main>
-        </>
-    );
+    return <DetailClient anime={anime} />;
 }

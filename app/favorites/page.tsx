@@ -1,11 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { supabase } from '../lib/supabaseClient';
 import Navbar from "../components/navigation";
 import '../styles.css';
 import Link from 'next/link';
-import '../components/ratings';
 import RatingInput from '../components/ratings';
 import Delete from '../components/deleteButton';
 
@@ -17,14 +17,36 @@ interface Favorite {
 }
 
 export default function FavoritesPage() {
+    const router = useRouter();
+    const [checkingAuth, setCheckingAuth] = useState(true);
     const [favorites, setFavorites] = useState<Favorite[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        const checkAuth = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                router.replace('/login');
+            } else {
+                setCheckingAuth(false);
+            }
+        };
+        checkAuth();
+    }, [router]);
+
+    useEffect(() => {
         const fetchFavorites = async () => {
+            const {
+                data: { session },
+            } = await supabase.auth.getSession();
+
+            const userId = session?.user.id;
+            if (!userId) return;
+
             const { data, error } = await supabase
                 .from('favorites')
-                .select('*');
+                .select('*')
+                .eq('user_id', userId);
 
             if (error) {
                 console.error("Error fetching favorites:", error);
@@ -34,8 +56,13 @@ export default function FavoritesPage() {
             setLoading(false);
         };
 
-        fetchFavorites();
-    }, []);
+        if (!checkingAuth) {
+            fetchFavorites();
+        }
+    }, [checkingAuth]);
+
+
+    if (checkingAuth) return <p>Loading auth...</p>;
 
     return (
         <>
@@ -62,7 +89,7 @@ export default function FavoritesPage() {
                                     <p className='genres'>{anime.genres.join(', ')}</p>
                                 </Link>
                                 <RatingInput movieId={anime.movies_id} />
-                                <Delete movies_id={anime.movies_id}/>
+                                <Delete movies_id={anime.movies_id} />
                             </div>
                         ))}
                     </div>

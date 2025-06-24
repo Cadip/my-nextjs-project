@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, ChangeEvent, KeyboardEvent } from "react";
+import { useState, useEffect, ChangeEvent, KeyboardEvent } from "react";
+import { useRouter } from "next/navigation";
 import Head from "next/head";
 import "./styles.css";
 import Navbar from "./components/navigation";
 import Link from 'next/link';
+import { supabase } from "./lib/supabaseClient";
 
 interface Anime {
   id: number;
@@ -20,8 +22,19 @@ interface Anime {
 }
 
 export default function HomePage() {
+  const router = useRouter();
   const [prompt, setPrompt] = useState<string>("");
   const [response, setResponse] = useState<Anime[]>([]);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        router.replace("/login");
+      }
+    };
+    checkAuth();
+  }, [router]);
 
   const sendPrompt = async () => {
     try {
