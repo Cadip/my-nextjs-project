@@ -8,6 +8,7 @@ import '../styles.css';
 import Link from 'next/link';
 import RatingInput from '../components/ratings';
 import Delete from '../components/deleteButton';
+import useRequireAuth from '../action/authSession'
 
 interface Favorite {
     movies_id: string;
@@ -21,6 +22,7 @@ export default function FavoritesPage() {
     const [checkingAuth, setCheckingAuth] = useState(true);
     const [favorites, setFavorites] = useState<Favorite[]>([]);
     const [loading, setLoading] = useState(true);
+    const { loading: authLoading } = useRequireAuth();
 
     useEffect(() => {
         const checkAuth = async () => {
@@ -64,6 +66,10 @@ export default function FavoritesPage() {
 
     if (checkingAuth) return <p>Loading auth...</p>;
 
+    if (authLoading) {
+        return <p>Loading authentication...</p>;
+    }
+    
     return (
         <>
             <Navbar />
